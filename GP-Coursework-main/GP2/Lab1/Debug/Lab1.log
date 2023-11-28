@@ -1,6 +1,1 @@
-﻿  FrameBufferObject.cpp
-D:\UNI\GP3\GP-Coursework-main\GP2\Lab1\FrameBufferObject.cpp(16,44): warning C4244: 'argument': conversion from 'float' to 'GLsizei', possible loss of data
-D:\UNI\GP3\GP-Coursework-main\GP2\Lab1\FrameBufferObject.cpp(16,41): warning C4244: 'argument': conversion from 'float' to 'GLsizei', possible loss of data
-D:\UNI\GP3\GP-Coursework-main\GP2\Lab1\FrameBufferObject.cpp(24,65): warning C4244: 'argument': conversion from 'float' to 'GLsizei', possible loss of data
-D:\UNI\GP3\GP-Coursework-main\GP2\Lab1\FrameBufferObject.cpp(24,62): warning C4244: 'argument': conversion from 'float' to 'GLsizei', possible loss of data
-  Lab1.vcxproj -> D:\UNI\GP3\GP-Coursework-main\GP2\Debug\Lab1.exe
+﻿  Lab1.vcxproj -> D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Debug\Lab1.exe

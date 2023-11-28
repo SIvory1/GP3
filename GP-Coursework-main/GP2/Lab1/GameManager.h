@@ -60,13 +60,15 @@ private:
 	ShaderManager FBOShader;
 
 	AudioManager gameAudio;
-	TextureManager tarmacTex;
-	TextureManager treeTex;
-	TextureManager appleTex;
-	TextureManager noise;
-	TextureManager noise1;
-	TextureManager texture1;
-	TextureManager water;
+
+    TextureManager* tarmacTex;
+	TextureManager* treeTex;
+	TextureManager* appleTex;
+	TextureManager* noise;
+	TextureManager* noise1;
+	TextureManager* texture1;
+	TextureManager* water;
+	
 
 	CubemapManager cubeMap;
     FrameBufferObject FBO;

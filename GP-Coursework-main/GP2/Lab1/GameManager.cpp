@@ -8,6 +8,12 @@ Transform transform;
 
 GameManager::GameManager()
 {
+
+	tarmacTex = new TextureManager("..\\res\\TarmacDark_D.jpg");
+	noise = new TextureManager("..\\res\\waternoise.png");
+	texture1 = new TextureManager("..\\res\\sky.jpg");
+	water = new TextureManager("..\\res\\water1.jpg");
+
 	// init variables
 	offset = 0.0;
 	scale = 1;
@@ -69,13 +75,6 @@ void GameManager::SystemsStart()
 	FBO.GenerateFBO(gameDisplay.getX(),gameDisplay.getY());
 	FBO.GenerateQuad();
 
-	// loads and initalizes textures
-	tarmacTex.TextureLoader("..\\res\\TarmacDark_D.jpg"); //load texture
-//	treeTex.TextureLoader("..\\res\\WoodenLog_Diffuse_8K.jpg");
-//	appleTex.TextureLoader("..\\res\\apple l_Material.003_BaseColor.png");
-	noise.TextureLoader("..\\res\\waternoise.png");
-	texture1.TextureLoader("..\\res\\sky.jpg");
-	water.TextureLoader("..\\res\\water1.jpg");
 }
 
 
@@ -348,7 +347,7 @@ void GameManager::Ground()
 	transform.SetPos(glm::vec3(10, -4, -15));
 	transform.SetScale(glm::vec3(50, 1, 50));
 
-	tarmacTex.BindTexture(0);
+	tarmacTex->BindTexture(0);
 
 	shader.Bind();
 	shader.UpdateShader(transform, mainCamera);
@@ -377,11 +376,11 @@ void GameManager::DrawWater()
 
 	//set textures
 	glActiveTexture(GL_TEXTURE1); //set acitve texture unit
-	glBindTexture(GL_TEXTURE_2D, noise.getID());
+	glBindTexture(GL_TEXTURE_2D, noise->getID());
 	glUniform1i(noiseTex, 1);
 
 	glActiveTexture(GL_TEXTURE2); //set acitve texture unit
-	glBindTexture(GL_TEXTURE_2D, water.getID());
+	glBindTexture(GL_TEXTURE_2D, water->getID());
 	glUniform1i(waterTex, 2);
 
 	waterShader.UpdateShader(transform, mainCamera);
@@ -415,7 +414,7 @@ void GameManager::DrawEMap()
 
 	//set textures
 	glActiveTexture(GL_TEXTURE1); //set acitve texture unit
-	glBindTexture(GL_TEXTURE_2D, tarmacTex.getID());
+	glBindTexture(GL_TEXTURE_2D, tarmacTex->getID());
 	glUniform1i(blur, 1);
 
 	emapShader.UpdateShader(transform, mainCamera);
