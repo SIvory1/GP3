@@ -42,6 +42,7 @@ private:
 	void DrawWater();
 	void ProcessKeyboardInputs(const Uint8* inputs);
 	void ShootMissile();
+	void InitMissile();
 
 	void print(float value)
 	{

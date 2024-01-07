@@ -453,48 +453,63 @@ void GameManager::DrawEMap()
 	m_cube.Draw();
 }
 
+
+glm::vec3 desiredVelocity;
+glm::vec3 steeringVelocity;
+MeshManager missleMesh;
+
+void GameManager::InitMissile()
+{
+
+}
+
+
 void GameManager::ShootMissile()
 {
-	// get main meshs rotation
-	transform.SetPos(glm::vec3(1, 1 , 0));
-	transform.SetRot(glm::vec3(0.0, 0, 0));
-	transform.SetScale(glm::vec3(40, 40, 40));
+	transform.SetPos(glm::vec3(5 * m_collsionCounter, 0.0, 5));
+	transform.SetRot(glm::vec3(0.0, 0.0, 0.0));
+	transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
 
-<<<<<<< HEAD
-	print(1);
-=======
->>>>>>> parent of a10484c (testing git)
+	m_tarmacTex->BindTexture(0);
+
+
+	desiredVelocity = (glm::normalize(m_cube.getSpherePos() - missleMesh.getSpherePos()));
+	steeringVelocity = desiredVelocity - glm::vec3(0.0f, 0.0f, 1.0f);
+
+	transform.SetPos(steeringVelocity * m_time);
+
+	m_shader.Bind();
+	m_shader.UpdateShader(transform, m_mainCamera);
+
+	m_cube.Draw(); 
+}
+/*transform.SetPos(glm::vec3(-5, 0.0, -5));
+	transform.SetRot(glm::vec3(0.0, 0.0, 0.0));
+	transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
+
 	m_tarmacTex->BindTexture(0);
 
 	m_shader.Bind();
 	m_shader.UpdateShader(transform, m_mainCamera);
 
-	m_cube.UpdateColData(*transform.GetPos(), 1);
+	desiredVelocity = (glm::normalize(m_cube.getSpherePos() - missleMesh.getSpherePos()));
+	steeringVelocity = desiredVelocity - glm::vec3(0.0f, 0.0f, 1.0f);
 
-	print(1);
+	transform.SetPos(steeringVelocity * m_time);
 
-	m_cube.Draw();
-}
+	missleMesh.UpdateColData(*transform.GetPos(), 1);
 
-void GameManager::ShootMissile()
-{
-	// define pos at player at init
-	
-    //transform.SetPos(glm::vec3(pos * speed * m_time, pos , pos));
-
-	//isColliding(missile, rock)
-
-
-}
+	m_cube.Draw();*/
 
 void GameManager::DrawGame()
 {
 	m_gameDisplay.ClearDisplay(0.5, 0.5, 0.5, 1.0);
 
-    m_FBO.BindFBO();
-	DrawSkyBox();
+   /* m_FBO.BindFBO();
+	//DrawSkyBox();
 	//Spinning();
-	Ground();
+	//Ground();
+	//ShootMissile();
 
 	if (cameraLock)
 	{
@@ -503,7 +518,7 @@ void GameManager::DrawGame()
 
 	if (shoot)
 	{
-		ShootMissile();
+		//ShootMissile();
 		shoot = false;
 	}
 
@@ -514,9 +529,13 @@ void GameManager::DrawGame()
 	
 	// if ship is dmaaged shake screen
 	m_FBO.RenderFBO(transform, m_mainCamera, m_collsionCounter);
-
+	*/
 	DrawSkyBox();
-	Ground();
+	//Ground();
+	ShootMissile();
+
+
+	m_collsionCounter = m_collsionCounter + 0.05f;
 
 	m_gameDisplay.ChangeBuffer();
 } 
