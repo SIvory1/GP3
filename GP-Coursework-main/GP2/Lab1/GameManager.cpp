@@ -56,6 +56,8 @@ void GameManager::SystemsStart()
 
 	// loads in models
 	m_cube.ModelLoader("..\\res\\cube.obj");
+	missleMesh.ModelLoader("..\\res\\cube.obj");
+
     //tree.ModelLoader("..\\res\\WoodenLog_obj.obj");
 	//apple.ModelLoader("..\\res\\Apple_obj.obj");
 
@@ -374,8 +376,8 @@ void GameManager::DrawMix()
 
 void GameManager::Ground()
 {
-	transform.SetPos(glm::vec3(1, 1, 1));
-	transform.SetScale(glm::vec3(40, 1, 40));
+	transform.SetPos(glm::vec3(-100, 20, -100));
+	transform.SetScale(glm::vec3(10, 4, 10));
 
 	m_tarmacTex->BindTexture(0);
 
@@ -454,9 +456,7 @@ void GameManager::DrawEMap()
 }
 
 
-glm::vec3 desiredVelocity;
-glm::vec3 steeringVelocity;
-MeshManager missleMesh;
+
 
 void GameManager::InitMissile()
 {
@@ -466,22 +466,21 @@ void GameManager::InitMissile()
 
 void GameManager::ShootMissile()
 {
-	transform.SetPos(glm::vec3(5 * m_collsionCounter, 0.0, 5));
+	transform.SetPos(glm::vec3(steeringVelocity * m_collsionCounter));
 	transform.SetRot(glm::vec3(0.0, 0.0, 0.0));
 	transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
 
 	m_tarmacTex->BindTexture(0);
 
-
 	desiredVelocity = (glm::normalize(m_cube.getSpherePos() - missleMesh.getSpherePos()));
-	steeringVelocity = desiredVelocity - glm::vec3(0.0f, 0.0f, 1.0f);
+	steeringVelocity = desiredVelocity - glm::vec3(0.0f, 0.0f, 0.0f); // need to get curren tvecoltiy
 
-	transform.SetPos(steeringVelocity * m_time);
+	//transform.SetPos(steeringVelocity * m_time);
 
 	m_shader.Bind();
 	m_shader.UpdateShader(transform, m_mainCamera);
 
-	m_cube.Draw(); 
+	missleMesh.Draw();
 }
 /*transform.SetPos(glm::vec3(-5, 0.0, -5));
 	transform.SetRot(glm::vec3(0.0, 0.0, 0.0));
@@ -531,7 +530,7 @@ void GameManager::DrawGame()
 	m_FBO.RenderFBO(transform, m_mainCamera, m_collsionCounter);
 	*/
 	DrawSkyBox();
-	//Ground();
+	Ground();
 	ShootMissile();
 
 

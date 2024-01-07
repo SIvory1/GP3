@@ -96,5 +96,11 @@ private:
 	float m_time = 0;
 
 	bool cameraLock;
+
+
+	glm::vec3 desiredVelocity;
+	glm::vec3 steeringVelocity;
+	MeshManager missleMesh;
+
 };
 
