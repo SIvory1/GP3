@@ -22,9 +22,9 @@ private:
 
 	void ReturnError(std::string errorMessage);
 
-	SDL_Window* window; //holds pointer to out window
-	int screenX;
-	int screenY;
-	SDL_GLContext glContext;
+	SDL_Window* m_window; //holds pointer to out window
+	int m_screenX;
+	int m_screenY;
+	SDL_GLContext m_glContext;
 };
 

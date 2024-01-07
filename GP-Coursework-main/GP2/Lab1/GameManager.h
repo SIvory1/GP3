@@ -31,6 +31,7 @@ private:
 	void GameActive();
 	void Spinning();
 	void Ground();
+	void UpdateDeltaTime();
 	void DrawSkyBox();
 	void DrawReflection();
 	void DrawRefraction();
@@ -39,52 +40,60 @@ private:
 	void DrawGame();
 	void DrawMix();
 	void DrawWater();
+	void ProcessKeyboardInputs(const Uint8* inputs);
+	void ShootMissile();
+
+	void print(float value)
+	{
+		cout << value << endl;
+	}
 
 	void Tree();
 	bool IsColliding(MeshManager& mesh, MeshManager& mesh1);
 
-	DisplayGame gameDisplay;
-	GameState gameState;
-	MeshManager cube;
-	MeshManager apple;
-	MeshManager tree;
-	MainCamera mainCamera;
-	ShaderManager shader;
-	ShaderManager cubemapShader;
-	ShaderManager reflectionShader;
-	ShaderManager refractionShader;
-	ShaderManager geoShader;
-	ShaderManager mixShader;
-	ShaderManager emapShader;
-	ShaderManager waterShader;
-	ShaderManager FBOShader;
+	DisplayGame m_gameDisplay;
+	GameState m_gameState;
+	MeshManager m_cube;
+	MeshManager m_apple;
+	MeshManager m_tree;
+	MainCamera m_mainCamera;
+	ShaderManager m_shader;
+	ShaderManager m_cubemapShader;
+	ShaderManager m_reflectionShader;
+	ShaderManager m_refractionShader;
+	ShaderManager m_geoShader;
+	ShaderManager m_mixShader;
+	ShaderManager m_emapShader;
+	ShaderManager m_waterShader;
+	ShaderManager m_FBOShader;
 
-	AudioManager gameAudio;
+	AudioManager m_gameAudio;
 
-    TextureManager* tarmacTex;
-	TextureManager* treeTex;
-	TextureManager* appleTex;
-	TextureManager* noise;
-	TextureManager* noise1;
-	TextureManager* texture1;
-	TextureManager* water;
+    TextureManager* m_tarmacTex;
+	TextureManager* m_treeTex;
+	TextureManager* m_appleTex;
+	TextureManager* m_noise;
+	TextureManager* m_noise1;
+	TextureManager* m_texture1;
+	TextureManager* m_water;
 	
-
-	CubemapManager cubeMap;
-    FrameBufferObject FBO;
+	CubemapManager m_cubeMap;
+    FrameBufferObject m_FBO;
 
 	// for object transform
-	float collsionCounter;
-	float counter;
+	float m_collsionCounter;
 
 	// mouse movement
-	float x;
-	float preX;
-	float y;
-	float preY;
+	float m_x, m_preX, m_y, m_preY;
 
 	// object manipluation
-	float scale;
-	float offset;
+	float m_scale;
+	float m_offset;
+
+	Uint64 m_currentFrame = SDL_GetPerformanceCounter();
+	Uint64 m_lastFrame = 0;
+	float m_time = 0;
+
+	bool cameraLock;
 };
 

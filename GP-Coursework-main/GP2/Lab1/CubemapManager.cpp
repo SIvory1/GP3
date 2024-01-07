@@ -5,11 +5,11 @@
 CubemapManager::CubemapManager() 
 {  
     // init variables
-    skyboxVAO = NULL;
-    skyboxVBO = NULL;
-    cubeVAO = NULL;
-    cubeVBO = NULL; 
-    cubemapTextureID = NULL;
+    m_skyboxVAO = NULL;
+    m_skyboxVBO = NULL;
+    m_cubeVAO = NULL;
+    m_cubeVBO = NULL;
+    m_cubemapTextureID = NULL;
 }
 
 CubemapManager::~CubemapManager()
@@ -127,10 +127,10 @@ void CubemapManager::InitalizeCubeMap()
 // generates and binds buffers and VAs
 void CubemapManager::CubemapVAO()
 {
-    glGenVertexArrays(1, &skyboxVAO); // creates vertex array and stores it in "skyboxVAO"
-    glGenBuffers(1, &skyboxVBO); // creates buffer 
-    glBindVertexArray(skyboxVAO); // binds the VAO
-    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO); // binds the buffer 
+    glGenVertexArrays(1, &m_skyboxVAO); // creates vertex array and stores it in "skyboxVAO"
+    glGenBuffers(1, &m_skyboxVBO); // creates buffer 
+    glBindVertexArray(m_skyboxVAO); // binds the VAO
+    glBindBuffer(GL_ARRAY_BUFFER, m_skyboxVBO); // binds the buffer 
     glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);// creates a buffer objects data store
     glEnableVertexAttribArray(0); 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // defines an array of generic vertex attribiute data 
@@ -138,10 +138,10 @@ void CubemapManager::CubemapVAO()
 // generates and binds buffers and VAs
 void CubemapManager::CubeVertexArrayObject()
 {
-    glGenVertexArrays(1, &cubeVAO);
-    glGenBuffers(1, &cubeVBO);
-    glBindVertexArray(cubeVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+    glGenVertexArrays(1, &m_cubeVAO);
+    glGenBuffers(1, &m_cubeVBO);
+    glBindVertexArray(m_cubeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_cubeVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
@@ -152,8 +152,8 @@ void CubemapManager::CubeVertexArrayObject()
 void CubemapManager::CubeMapLoader()
 {
     // creates texture and binds texture
-    glGenTextures(1, &cubemapTextureID);  
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTextureID);
+    glGenTextures(1, &m_cubemapTextureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapTextureID);
 
     // faces vector holds file location of all textures, loops through and generates the texture for each face of cubemap
     int width, height, nrChannels;
@@ -184,9 +184,9 @@ void CubemapManager::CubeMapLoader()
 void CubemapManager::DrawCubemap() 
 {
     glDepthFunc(GL_LEQUAL); // change depth function so depth test passes when values are equal to depth buffer's content
-    glBindVertexArray(skyboxVAO); // binds the VAO
+    glBindVertexArray(m_skyboxVAO); // binds the VAO
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTextureID); //binds texture to target
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapTextureID); //binds texture to target
     glDrawArrays(GL_TRIANGLES, 0, 36); // specfies primitives we are rendering
     glBindVertexArray(0); 
     glDepthFunc(GL_LESS); // set depth function back to default
@@ -195,9 +195,9 @@ void CubemapManager::DrawCubemap()
 // called in draw fucntion to render cubes
 void CubemapManager::DrawCube()
 {
-    glBindVertexArray(cubeVAO);
+    glBindVertexArray(m_cubeVAO);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTextureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapTextureID);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
 }

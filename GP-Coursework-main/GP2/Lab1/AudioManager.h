@@ -16,7 +16,7 @@ class AudioManager
 		void PlayAudio();
 
 	private:
-		Mix_Music* music;
-		std::vector<Mix_Chunk*> soundHolder;
+		Mix_Music* m_music;
+		std::vector<Mix_Chunk*> m_soundHolder;
 };
 

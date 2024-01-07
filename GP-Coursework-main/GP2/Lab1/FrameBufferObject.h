@@ -19,6 +19,6 @@ public:
     void GenerateQuad();
     void RenderFBO(const Transform& transform, const MainCamera& cam, float counter);
 
-    GLuint FBO, RBO, CBO, quadVAO, quadVBO;
-    ShaderManager FBOShader;
+    GLuint m_FBO, m_RBO, m_CBO, m_quadVAO, m_quadVBO;
+    ShaderManager m_FBOShader;
 };

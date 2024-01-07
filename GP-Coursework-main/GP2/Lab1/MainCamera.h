@@ -52,6 +52,11 @@ public:
 		this->projection = glm::perspective(fov, aspect, nearClip, farClip);
 	}
 
+	void LookAt(glm::vec3 modelPos)
+	{
+		forward = glm::vec3(glm::normalize(modelPos - pos));
+	}
+
 	// used to adjust fov value
 	void Zoom(int zoomForce)
 	{

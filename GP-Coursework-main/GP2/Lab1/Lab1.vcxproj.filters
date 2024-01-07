@@ -178,5 +178,8 @@
     <Image Include="..\res\pebbles.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\res\TarmacDark_D.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

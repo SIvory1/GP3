@@ -13,12 +13,11 @@ TextureManager::TextureManager(const std::string& filename)
 		std::cerr << "texture load failed" << filename << std::endl;
 	}
 
-	glGenTextures(1, &textureID); // number of and address of textures
-	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID); //bind texture 
+	glGenTextures(1, &m_textureID); // number of and address of textures
+	glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureID); //bind texture 
 
-
-	glGenTextures(1, &textureManager); // number of and address of textures
-	glBindTexture(GL_TEXTURE_2D, textureManager); //bind texture 
+	glGenTextures(1, &m_textureManager); // number of and address of textures
+	glBindTexture(GL_TEXTURE_2D, m_textureManager); //bind texture 
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // wrap texture outside width
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // wrap texture outside height
@@ -33,7 +32,7 @@ TextureManager::TextureManager(const std::string& filename)
 
 TextureManager::~TextureManager()
 {
-	glDeleteTextures(1, &textureManager); // number of and address of textures
+	glDeleteTextures(1, &m_textureManager); // number of and address of textures
 }
 
 void TextureManager::BindTexture(unsigned int obj)
@@ -41,7 +40,7 @@ void TextureManager::BindTexture(unsigned int obj)
 	assert(obj >= 0 && obj <= 31); // checks if we are usign one of 32 textures
 
 	glActiveTexture(GL_TEXTURE0 + obj); //set active texture unit
-	glBindTexture(GL_TEXTURE_2D, textureManager); //binds texture 
+	glBindTexture(GL_TEXTURE_2D, m_textureManager); //binds texture 
 }
 
 void TextureManager::TextureLoader(const std::string& filename)
@@ -54,12 +53,12 @@ void TextureManager::TextureLoader(const std::string& filename)
 		std::cerr << "texture load failed" << filename << std::endl;
 	}
 
-	glGenTextures(1, &textureID); // number of and address of textures
-	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID); //bind texture 
+	glGenTextures(1, &m_textureID); // number of and address of textures
+	glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureID); //bind texture 
 
 
-	glGenTextures(1, &textureManager); // number of and address of textures
-	glBindTexture(GL_TEXTURE_2D, textureManager); //bind texture 
+	glGenTextures(1, &m_textureManager); // number of and address of textures
+	glBindTexture(GL_TEXTURE_2D, m_textureManager); //bind texture 
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // wrap texture outside width
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // wrap texture outside height

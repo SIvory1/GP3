@@ -3,7 +3,7 @@
 AudioManager::AudioManager()
 {
     // init variables
-    music = NULL;
+    m_music = NULL;
 
     int audio_rate = 22050;
     Uint16 audio_format = AUDIO_S16SYS;
@@ -29,8 +29,8 @@ void AudioManager::AddSound(const char* path)
 
     if (tmpChunk != nullptr)
     {
-        soundHolder.push_back(tmpChunk);
-        std::cout << (soundHolder.size() - 1) << " Sound is Ready, path: " << path << '\n';
+        m_soundHolder.push_back(tmpChunk);
+        std::cout << (m_soundHolder.size() - 1) << " Sound is Ready, path: " << path << '\n';
     }
     else
     {
@@ -40,9 +40,9 @@ void AudioManager::AddSound(const char* path)
 
 void AudioManager::AddAudio(const char* path)
 {
-    music = Mix_LoadMUS(path);
+    m_music = Mix_LoadMUS(path);
 
-    if (music == NULL)
+    if (m_music == NULL)
     {
         printf("Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
     }
@@ -50,12 +50,12 @@ void AudioManager::AddAudio(const char* path)
 
 void AudioManager::PlaySound(const int x) const
 {
-    if (x > soundHolder.size() - 1)
+    if (x > m_soundHolder.size() - 1)
     {
         return;
     }
 
-    Mix_PlayChannel(-1, soundHolder[x], 0);
+    Mix_PlayChannel(-1, m_soundHolder[x], 0);
 }
 
 void AudioManager::PlayAudio()
@@ -63,6 +63,6 @@ void AudioManager::PlayAudio()
     if (Mix_PlayingMusic() == 0)
     {
         //Play the music
-        Mix_PlayMusic(music, -1);
+        Mix_PlayMusic(m_music, -1);
     }
 }

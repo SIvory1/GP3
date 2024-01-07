@@ -11,11 +11,11 @@ public:
 
 	void BindTexture(unsigned int obj); // bind upto 32 textures
 	void TextureLoader(const std::string& filename);
-	GLuint getID() { return textureManager; }
+	GLuint getID() { return m_textureManager; }
 
 private:
 
-	GLuint textureManager;
-	unsigned int textureID;
+	GLuint m_textureManager;
+	unsigned int m_textureID;
 };
 

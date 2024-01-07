@@ -4,23 +4,23 @@
 DisplayGame::DisplayGame()
 {
 	// init variables
-	glContext = nullptr;
-	window = nullptr; 
-	screenX = 1024;
-	screenY = 768;
+	m_glContext = nullptr;
+	m_window = nullptr;
+	m_screenX = 1024;
+	m_screenY = 768;
 }
 
 DisplayGame::~DisplayGame()
 {
 	// when game ends deletes left over systems
-	SDL_GL_DeleteContext(glContext);
-	SDL_DestroyWindow(window);
+	SDL_GL_DeleteContext(m_glContext);
+	SDL_DestroyWindow(m_window);
 	SDL_Quit();
 }
 
 // getters to return screen size
-float DisplayGame::getX() { return screenX; } //getters
-float DisplayGame::getY() { return screenY; }
+float DisplayGame::getX() { return m_screenX; } //getters
+float DisplayGame::getY() { return m_screenY; }
 
 // reuseable fucntion used to show which error has occured
 void DisplayGame::ReturnError(std::string errorMessage)
@@ -38,7 +38,7 @@ void DisplayGame::ReturnError(std::string errorMessage)
 void DisplayGame::ChangeBuffer()
 {
 	// updates window, used for doubel buffering
-	SDL_GL_SwapWindow(window);
+	SDL_GL_SwapWindow(m_window);
 }
 
 
@@ -60,21 +60,21 @@ void DisplayGame::InitalizeDisplay()
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	// creates window 
-	window = SDL_CreateWindow("Game Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screenX, screenY, SDL_WINDOW_OPENGL);
+	m_window = SDL_CreateWindow("Game Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_screenX, m_screenY, SDL_WINDOW_OPENGL);
 
 	// creates context for our window
-	glContext = SDL_GL_CreateContext(window);
+	m_glContext = SDL_GL_CreateContext(m_window);
 
 	//opengl extension wrangler libary 
 	GLenum error = glewInit();
 
 	// if window fails, ensures we know it was window for debugging
-	if (window == nullptr)
+	if (m_window == nullptr)
 	{
 		ReturnError("window failed to create");
 	}
 
-	if (glContext == nullptr)
+	if (m_glContext == nullptr)
 	{
 		ReturnError("glContext failed to create");
 	}

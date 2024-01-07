@@ -140,6 +140,7 @@
     <Image Include="..\res\noise.png" />
     <Image Include="..\res\pebbles.png" />
     <Image Include="..\res\sky.jpg" />
+    <Image Include="..\res\TarmacDark_D.jpg" />
     <Image Include="..\res\waternoise.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

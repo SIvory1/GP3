@@ -18,7 +18,7 @@ public:
 
 private:
 
-	unsigned int cubemapTextureID;
-	unsigned int cubeVAO, cubeVBO;
-	unsigned int skyboxVAO, skyboxVBO;
+	unsigned int m_cubemapTextureID;
+	unsigned int m_cubeVAO, m_cubeVBO;
+	unsigned int m_skyboxVAO, m_skyboxVBO;
 };

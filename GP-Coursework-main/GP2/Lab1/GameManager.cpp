@@ -2,32 +2,34 @@
 #include "MainCamera.h"
 #include <iostream>
 #include <string>
-#define TICK_INTERVAL 30;
 
 Transform transform;
+
+bool shoot;
 
 GameManager::GameManager()
 {
 
-	tarmacTex = new TextureManager("..\\res\\TarmacDark_D.jpg");
-	noise = new TextureManager("..\\res\\waternoise.png");
-	texture1 = new TextureManager("..\\res\\sky.jpg");
-	water = new TextureManager("..\\res\\water1.jpg");
+	m_tarmacTex = new TextureManager("..\\res\\TarmacDark_D.jpg");
+	m_noise = new TextureManager("..\\res\\waternoise.png");
+	m_texture1 = new TextureManager("..\\res\\sky.jpg");
+	m_water = new TextureManager("..\\res\\water1.jpg");
 
 	// init variables
-	offset = 0.0;
-	scale = 1;
+	m_offset = 0.0;
+	m_scale = 1;
 
-	counter = 0;
-	gameState = GameState::PLAY;
+	m_gameState = GameState::PLAY;
 
-	counter = 1.0f;
-	collsionCounter = 1.0f;
+	m_collsionCounter = 1.0f;
 
-	x = 0;
-	y = 0;
-	preX = 0;
-	preY = 0;
+	m_x = 0;
+	m_y = 0;
+	m_preX = 0;
+	m_preY = 0;
+
+	cameraLock = false;
+	shoot = false;
 }
 
 GameManager::~GameManager()
@@ -44,69 +46,59 @@ void GameManager::run()
 // initalizes shader, textures, meshes, sounds 
 void GameManager::SystemsStart()
 {
-	gameDisplay.InitalizeDisplay();
+	m_gameDisplay.InitalizeDisplay();
 
-	geoShader.initGeo();
+	m_geoShader.initGeo();
     // audio 
-	gameAudio.AddAudio("..\\res\\background.wav");
-	gameAudio.AddSound("..\\res\\shoot.wav");
+	m_gameAudio.AddAudio("..\\res\\background.wav");
+	m_gameAudio.AddSound("..\\res\\shoot.wav");
 //	gameAudio.PlayAudio();
 
 	// loads in models
-	cube.ModelLoader("..\\res\\cube.obj");
+	m_cube.ModelLoader("..\\res\\cube.obj");
     //tree.ModelLoader("..\\res\\WoodenLog_obj.obj");
 	//apple.ModelLoader("..\\res\\Apple_obj.obj");
 
-	mainCamera.InitializeCamera(glm::vec3(0, 0, -5), glm::radians(mainCamera.fov), (float)gameDisplay.getX()/gameDisplay.getY(), 0.01f, 1000.0f);
+	m_mainCamera.InitializeCamera(glm::vec3(0, 0, -5), glm::radians(m_mainCamera.fov), (float)m_gameDisplay.getX()/ m_gameDisplay.getY(), 0.01f, 1000.0f);
 
 	// initalizes shaders
-	shader.InitalizeShader("..\\res\\shader.vert", "..\\res\\shader.frag");
-	cubemapShader.InitalizeShader("..\\res\\cubemapShader.vert", "..\\res\\cubemapShader.frag");
+	m_shader.InitalizeShader("..\\res\\shader.vert", "..\\res\\shader.frag");
+	m_cubemapShader.InitalizeShader("..\\res\\cubemapShader.vert", "..\\res\\cubemapShader.frag");
 	//reflectionShader.InitalizeShader("..\\res\\reflectionShader.vert", "..\\res\\reflectionShader.frag");
 	//refractionShader.InitalizeShader("..\\res\\refractionShader.vert", "..\\res\\refractionShader.frag");
 //	mixShader.InitalizeShader("..\\res\\mix.vert", "..\\res\\mix.frag");
-	emapShader.InitalizeShader("..\\res\\environmentMap.vert", "..\\res\\environmentMap.frag");
-	waterShader.InitalizeShader("..\\res\\water.vert", "..\\res\\water.frag");
+	m_emapShader.InitalizeShader("..\\res\\environmentMap.vert", "..\\res\\environmentMap.frag");
+	m_waterShader.InitalizeShader("..\\res\\water.vert", "..\\res\\water.frag");
 
 	// initalizes cubemap/cube functions
-	cubeMap.InitalizeCubeMap();
-	cubeMap.CubeVertexArrayObject();
+	m_cubeMap.InitalizeCubeMap();
+	m_cubeMap.CubeVertexArrayObject();
 
-	FBO.GenerateFBO(gameDisplay.getX(),gameDisplay.getY());
-	FBO.GenerateQuad();
+	m_FBO.GenerateFBO(m_gameDisplay.getX(), m_gameDisplay.getY());
+	m_FBO.GenerateQuad();
 
 }
 
-
-// used to regulate frame rate
-static Uint32 next_time;
-
-Uint32 time_left(void)
+// do mili sec aswell?
+void GameManager::UpdateDeltaTime()
 {
-	Uint32 now;
+	m_lastFrame = m_currentFrame;
+	m_currentFrame = SDL_GetPerformanceCounter();
 
-	now = SDL_GetTicks();
+	m_time = (float)((m_currentFrame - m_lastFrame) / (float)SDL_GetPerformanceFrequency());
 
-	if (next_time <= now)
-		return 0;
-	else
-		return next_time - now;
 }
 
 void GameManager::GameActive()
 {
 	cout << "done" << endl;
-	next_time = SDL_GetTicks() + TICK_INTERVAL;
 	// if game isnt closed then constantly function calls fucntiosn that need to be updated regulary
-	while (gameState != GameState::EXIT)
+	while (m_gameState != GameState::EXIT)
 	{
 		ProcessInputs();
 		DrawGame();
-		IsColliding(apple, tree);
-
-		// used for regulating framerate
-		SDL_Delay(time_left());
-		next_time += TICK_INTERVAL;
+		IsColliding(m_apple, m_tree);
+		UpdateDeltaTime();
 
 		// locks mouse in window and hide it 
 		SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -120,106 +112,126 @@ void GameManager::ProcessInputs()
 		switch (event.type)
 		{
 		case SDL_QUIT:
-			gameState = GameState::EXIT;
+			m_gameState = GameState::EXIT;
 			break;
 		case SDL_MOUSEWHEEL:
 		{
 			// when player used scroll wheel
-			if (event.wheel.y > 0 && mainCamera.fov != 0)			
+			if (event.wheel.y > 0 && m_mainCamera.fov != 0)
 			{			
 				// increases fov
-				mainCamera.Zoom(-1);
+				m_mainCamera.Zoom(-1);
 				// updates fov 
-				mainCamera.ChangeFOV(glm::radians(mainCamera.fov), (float)gameDisplay.getX() / gameDisplay.getY(), 0.01f, 1000.0f);
+				m_mainCamera.ChangeFOV(glm::radians(m_mainCamera.fov), (float)m_gameDisplay.getX() / m_gameDisplay.getY(), 0.01f, 1000.0f);
 			}
 		    if (event.wheel.y < 0)
 			{
 				// decreases fov
-				mainCamera.Zoom(1);
+				m_mainCamera.Zoom(1);
 				// updates fov 
-				mainCamera.ChangeFOV(glm::radians(mainCamera.fov), (float)gameDisplay.getX() / gameDisplay.getY(), 0.01f, 1000.0f);
-			}
+				m_mainCamera.ChangeFOV(glm::radians(m_mainCamera.fov), (float)m_gameDisplay.getX() / m_gameDisplay.getY(), 0.01f, 1000.0f);
+			}		
 		}
+		break;
 		case SDL_MOUSEBUTTONDOWN:
 		{
 			// when player inputs mouse buttons objects in scene moves 
 			if (event.button.button == SDL_BUTTON_LEFT)
 			{
-				offset += 1;
+
+				shoot = true;
+				//m_offset += 1;
 			}
 			if (event.button.button == SDL_BUTTON_RIGHT)
 			{
-				offset -= 1;
+				m_offset -= 1;
 			}
-			break;
 		}
+		break;
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym)
 			{
-				// players wasd, shift, space movement 
-			case SDLK_w:
-				mainCamera.MoveForward(1);
-				break;
-			case SDLK_s:
-				mainCamera.MoveForward(-1);
-				break;
-			case SDLK_d:
-				mainCamera.MoveHoriz(1);
-				break;
-			case SDLK_a:
-				mainCamera.MoveHoriz(-1);
-				break;
-			case SDLK_SPACE:
-				mainCamera.MoveVertical(1);
-				break;
-			case SDLK_LSHIFT:
-				mainCamera.MoveVertical(-1);
-				break;
 				// can adjust object size
 			case SDLK_e:
-				scale += .1;
+			//	m_scale += .1;
+				cameraLock = true;
+				break;
+			case SDLK_r:
+				//	m_scale += .1;
+				cameraLock = false;
 				break;
 			case SDLK_q:
-				if (scale > 0)
+				if (m_scale > 0)
 				{
-					scale -= .1;
+					m_scale -= .1;
 				}
 				break;
 				// reset camera pos 
 			case SDLK_v:
-				mainCamera.InitializeCamera(glm::vec3(0, 0, -5), glm::radians(mainCamera.fov), (float)gameDisplay.getX() / gameDisplay.getY(), 0.01f, 1000.0f);
+				m_mainCamera.InitializeCamera(glm::vec3(0, 0, -5), glm::radians(m_mainCamera.fov), (float)m_gameDisplay.getX() / m_gameDisplay.getY(), 0.01f, 1000.0f);
 				break;
 			}
+			break;
 		case SDL_MOUSEMOTION:
 		{
-			// stores the x and y position of screen space
-			x = event.motion.x;
-			y = event.motion.y;
-			// checks to see if the x value has increased or decreases from last pos
-			if (x > preX || x >= (gameDisplay.getX()) - 1)
+			if (!cameraLock)
 			{
-				mainCamera.RotateX(-0.01);
+			    m_x = event.motion.x;
+				m_y = event.motion.y;
+				// checks to see if the x value has increased or decreases from last pos
+				if (m_x > m_preX || m_x >= (m_gameDisplay.getX()) - 1)
+				{
+					m_mainCamera.RotateX(-0.01);
+				}
+				else if (m_x < m_preX || m_x == 0)
+				{
+					m_mainCamera.RotateX(0.01);
+				}
+				// checks to see if the y value has increased or decreases from last pos
+				if (m_y > m_preY || m_preY >= (m_gameDisplay.getY()) - 1)
+				{
+					m_mainCamera.RotateY(0.01);
+				}
+				if (m_y < m_preY || m_y == 0)
+				{
+					m_mainCamera.RotateY(-0.01);
+				}
+				// gives current pos to variables
+				m_preX = m_x;
+				m_preY = m_y;	// stores the x and y position of screen space			
 			}
-			else if (x < preX || x == 0)
-			{
-				mainCamera.RotateX(0.01);
-			}
-			// checks to see if the y value has increased or decreases from last pos
-			if (y > preY || preY >= (gameDisplay.getY()) - 1)
-			{
-				mainCamera.RotateY(0.01);
-			}
-			if (y < preY || y == 0)
-			{
-				mainCamera.RotateY(-0.01);
-			}
-			// gives current pos to variables
-			preX = x;
-			preY = y;
 		}
+		break;
 		}
     }
+	const Uint8* keyInputs = SDL_GetKeyboardState(NULL);
+	ProcessKeyboardInputs(keyInputs);
 }
+
+void GameManager::ProcessKeyboardInputs(const Uint8* inputs)
+{
+	float distance = 40.0f * m_time;
+
+	if (inputs[SDL_SCANCODE_W]) { // Move forward
+		m_mainCamera.MoveForward(distance);
+	}
+	if (inputs[SDL_SCANCODE_S]) { // Move backward
+		m_mainCamera.MoveForward(-distance);
+	}
+	if (inputs[SDL_SCANCODE_A]) { // Move left
+		m_mainCamera.MoveHoriz(-distance);
+	}
+	if (inputs[SDL_SCANCODE_D]) { // Move right
+		m_mainCamera.MoveHoriz(distance);
+	}
+	if (inputs[SDL_SCANCODE_SPACE]) {
+		m_mainCamera.MoveVertical(distance);
+	}
+	if (inputs[SDL_SCANCODE_LSHIFT]) {
+		m_mainCamera.MoveVertical(-distance);
+	}
+};
+
 
 // reads in 2 meshes and checks if they are colliding
 bool GameManager::IsColliding(MeshManager& mesh, MeshManager& mesh1)
@@ -231,8 +243,8 @@ bool GameManager::IsColliding(MeshManager& mesh, MeshManager& mesh1)
 		+ (mesh1.getSpherePos().z - mesh.getSpherePos().z) * (mesh1.getSpherePos().z - mesh.getSpherePos().z));
 	if (distance * distance < (mesh.getSphereRad() + mesh1.getSphereRad()))
 	{	
-    	collsionCounter *= 0;
-		gameAudio.PlaySound(0);
+		m_collsionCounter *= 0;
+		m_gameAudio.PlaySound(0);
 		return true;
 	}
 		return false;
@@ -259,25 +271,42 @@ bool GameManager::IsColliding(MeshManager& mesh, MeshManager& mesh1)
 	apple.Draw();
 }
 
+void GameManager::Spinning()
+{
+	// sets pos, rotation, scale
+	transform.SetRot(glm::vec3(0.0, 0.0, 0));
+	transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
 
+	// binds texture
+	m_tarmacTex->BindTexture(0);
 
+	// bind shader and updates
+	m_shader.Bind();
+	m_shader.UpdateShader(transform, m_mainCamera);
+
+	// updates col
+	m_apple.UpdateColData(*transform.GetPos(), m_scale);
+
+	// draws object
+	m_apple.Draw();
+}
 void GameManager::Tree()
 {
-		transform.SetPos(glm::vec3(5 + offset, 0.0,0));
-		transform.SetRot(glm::vec3(0.0, counter * 2, 0));
-     	transform.SetScale(glm::vec3(scale, scale, scale));
+	transform.SetPos(glm::vec3(5 + m_offset, 0.0, 0));
+	transform.SetRot(glm::vec3(0.0, m_time * 2, 0));
+	transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
 
-		treeTex.BindTexture(0);
+	m_treeTex.BindTexture(0);
 
-		geoShader.Bind();
+	m_geoShader.Bind();
 
-		geoShader.UpdateShader(transform, mainCamera);
+	m_geoShader.UpdateShader(transform, m_mainCamera);
 
-		geoShader.setFloat("time", counter / 2);
+	m_geoShader.setFloat("time", m_tree / 2);
 
-		tree.UpdateColData(*transform.GetPos(), scale);
+	m_tree.UpdateColData(*transform.GetPos(), m_scale);
 
-		tree.Draw();
+	m_tree.Draw();
 }
 
 
@@ -342,20 +371,22 @@ void GameManager::DrawMix()
 
 }*/
 
+
 void GameManager::Ground()
 {
-	transform.SetPos(glm::vec3(10, -4, -15));
-	transform.SetScale(glm::vec3(50, 1, 50));
+	transform.SetPos(glm::vec3(1, 1, 1));
+	transform.SetScale(glm::vec3(40, 1, 40));
 
-	tarmacTex->BindTexture(0);
+	m_tarmacTex->BindTexture(0);
 
-	shader.Bind();
-	shader.UpdateShader(transform, mainCamera);
+	m_shader.Bind();
+	m_shader.UpdateShader(transform, m_mainCamera);
 
-	cube.UpdateColData(*transform.GetPos(), 1);
+	m_cube.UpdateColData(*transform.GetPos(), 1);
 
-	cube.Draw();
+	m_cube.Draw();
 }
+
 void GameManager::DrawWater()
 {
 	glEnable(GL_BLEND);
@@ -363,29 +394,29 @@ void GameManager::DrawWater()
 
 	transform.SetPos(glm::vec3(1, 0, 0));
 	transform.SetRot(glm::vec3(0.0, 0, 0));
-	transform.SetScale(glm::vec3(scale, scale, scale));
+	transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
 
-	waterShader.Bind();
-	waterShader.setMat4("model", transform.GetModel());
-	waterShader.setVec3("cameraPos", mainCamera.getPosition());
+	m_waterShader.Bind();
+	m_waterShader.setMat4("model", transform.GetModel());
+	m_waterShader.setVec3("cameraPos", m_mainCamera.getPosition());
 
-	waterShader.setFloat("time", counter / 20);
+	m_waterShader.setFloat("time", m_time / 20);
 
-	GLuint noiseTex = glGetUniformLocation(waterShader.getID(), "noiseTex");
-	GLuint waterTex = glGetUniformLocation(waterShader.getID(), "water");
+	GLuint noiseTex = glGetUniformLocation(m_waterShader.getID(), "noiseTex");
+	GLuint waterTex = glGetUniformLocation(m_waterShader.getID(), "water");
 
 	//set textures
 	glActiveTexture(GL_TEXTURE1); //set acitve texture unit
-	glBindTexture(GL_TEXTURE_2D, noise->getID());
+	glBindTexture(GL_TEXTURE_2D, m_noise->getID());
 	glUniform1i(noiseTex, 1);
 
 	glActiveTexture(GL_TEXTURE2); //set acitve texture unit
-	glBindTexture(GL_TEXTURE_2D, water->getID());
+	glBindTexture(GL_TEXTURE_2D, m_water->getID());
 	glUniform1i(waterTex, 2);
 
-	waterShader.UpdateShader(transform, mainCamera);
+	m_waterShader.UpdateShader(transform, m_mainCamera);
 
-	cube.Draw();
+	m_cube.Draw();
 }
 void GameManager::DrawSkyBox()
 {
@@ -393,9 +424,9 @@ void GameManager::DrawSkyBox()
 	transform.SetRot(glm::vec3(0.0, 0.0, 0.0));
 	transform.SetScale(glm::vec3(100, 100, 100));
 
-	cubemapShader.Bind();
-	cubemapShader.UpdateCubemap(mainCamera);
-	cubeMap.DrawCubemap();
+	m_cubemapShader.Bind();
+	m_cubemapShader.UpdateCubemap(m_mainCamera);
+	m_cubeMap.DrawCubemap();
 }
 void GameManager::DrawEMap()
 {
@@ -404,46 +435,84 @@ void GameManager::DrawEMap()
 
 	transform.SetPos(glm::vec3(-2, 0.0, 0));
 	transform.SetRot(glm::vec3(0.0, 0, 0));
-	transform.SetScale(glm::vec3(scale, scale, scale));
+	transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
 
-	emapShader.Bind();
-	emapShader.setMat4("model", transform.GetModel());
-	emapShader.setVec3("cameraPos", mainCamera.getPosition());
+	m_emapShader.Bind();
+	m_emapShader.setMat4("model", transform.GetModel());
+	m_emapShader.setVec3("cameraPos", m_mainCamera.getPosition());
 
-	GLuint blur = glGetUniformLocation(emapShader.getID(), "diffuse");
+	GLuint blur = glGetUniformLocation(m_emapShader.getID(), "diffuse");
 
 	//set textures
 	glActiveTexture(GL_TEXTURE1); //set acitve texture unit
-	glBindTexture(GL_TEXTURE_2D, tarmacTex->getID());
+	glBindTexture(GL_TEXTURE_2D, m_tarmacTex->getID());
 	glUniform1i(blur, 1);
 
-	emapShader.UpdateShader(transform, mainCamera);
+	m_emapShader.UpdateShader(transform, m_mainCamera);
 
-	cube.Draw();
+	m_cube.Draw();
+}
+
+void GameManager::ShootMissile()
+{
+	// get main meshs rotation
+	transform.SetPos(glm::vec3(1, 1 , 0));
+	transform.SetRot(glm::vec3(0.0, 0, 0));
+	transform.SetScale(glm::vec3(40, 40, 40));
+
+	m_tarmacTex->BindTexture(0);
+
+	m_shader.Bind();
+	m_shader.UpdateShader(transform, m_mainCamera);
+
+	m_cube.UpdateColData(*transform.GetPos(), 1);
+
+	print(1);
+
+	m_cube.Draw();
+}
+
+void GameManager::ShootMissile()
+{
+	// define pos at player at init
+	
+    //transform.SetPos(glm::vec3(pos * speed * m_time, pos , pos));
+
+	//isColliding(missile, rock)
+
+
 }
 
 void GameManager::DrawGame()
 {
-	gameDisplay.ClearDisplay(0.5, 0.5, 0.5, 1.0);
+	m_gameDisplay.ClearDisplay(0.5, 0.5, 0.5, 1.0);
 
-	FBO.BindFBO();
-	//Ground();
-	//Tree();
+    m_FBO.BindFBO();
 	DrawSkyBox();
-	//DrawEMap();
-	//DrawWater();
+	//Spinning();
+	Ground();
 
-	// counter is adjusted 
-	counter = counter + 0.05f;
-	collsionCounter = collsionCounter + 0.05f;
+	if (cameraLock)
+	{
+		m_mainCamera.LookAt(m_cube.getSpherePos());
+	}
 
-	// what do these do?
-	//glEnableClientState(GL_COLOR_ARRAY); 
-//	glEnd();
+	if (shoot)
+	{
+		ShootMissile();
+		shoot = false;
+	}
 
-	FBO.UnbindFBO();
 
-	FBO.RenderFBO(transform, mainCamera, counter);
+	m_collsionCounter = m_collsionCounter + 0.05f;
 
-	gameDisplay.ChangeBuffer();
+	m_FBO.UnbindFBO();
+	
+	// if ship is dmaaged shake screen
+	m_FBO.RenderFBO(transform, m_mainCamera, m_collsionCounter);
+
+	DrawSkyBox();
+	Ground();
+
+	m_gameDisplay.ChangeBuffer();
 } 
