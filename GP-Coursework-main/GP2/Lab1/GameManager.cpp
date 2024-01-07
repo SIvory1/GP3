@@ -460,7 +460,10 @@ void GameManager::ShootMissile()
 	transform.SetRot(glm::vec3(0.0, 0, 0));
 	transform.SetScale(glm::vec3(40, 40, 40));
 
+<<<<<<< HEAD
 	print(1);
+=======
+>>>>>>> parent of a10484c (testing git)
 	m_tarmacTex->BindTexture(0);
 
 	m_shader.Bind();
