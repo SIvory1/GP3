@@ -1,9 +1,9 @@
 ﻿  GameManager.cpp
-D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(168,19): warning C4305: '-=': truncation from 'double' to 'float'
-D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(181,26): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
-D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(182,23): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
-D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(186,32): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(190,31): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(195,31): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(199,32): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(171,19): warning C4305: '-=': truncation from 'double' to 'float'
+D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(184,26): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
+D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(185,23): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
+D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(189,32): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(193,31): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(198,31): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(202,32): warning C4305: 'argument': truncation from 'double' to 'float'
   Lab1.vcxproj -> D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Debug\Lab1.exe

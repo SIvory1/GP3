@@ -31,6 +31,7 @@ private:
 	void GameActive();
 	void Spinning();
 	void Ground();
+	void Ground1();
 	void UpdateDeltaTime();
 	void DrawSkyBox();
 	void DrawReflection();
@@ -40,9 +41,11 @@ private:
 	void DrawGame();
 	void DrawMix();
 	void DrawWater();
+	void DrawPlayer();
 	void ProcessKeyboardInputs(const Uint8* inputs);
 	void ShootMissile();
 	void InitMissile();
+
 
 	void print(float value)
 	{
@@ -57,6 +60,8 @@ private:
 	MeshManager m_cube;
 	MeshManager m_apple;
 	MeshManager m_tree;
+	MeshManager missleMesh;
+	MeshManager m_player;
 	MainCamera m_mainCamera;
 	ShaderManager m_shader;
 	ShaderManager m_cubemapShader;
@@ -97,10 +102,7 @@ private:
 
 	bool cameraLock;
 
-
 	glm::vec3 desiredVelocity;
 	glm::vec3 steeringVelocity;
-	MeshManager missleMesh;
-
 };
 

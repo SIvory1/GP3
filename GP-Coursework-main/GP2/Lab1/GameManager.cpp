@@ -29,7 +29,7 @@ GameManager::GameManager()
 	m_preY = 0;
 
 	cameraLock = false;
-	shoot = false;
+	shoot = true;
 }
 
 GameManager::~GameManager()
@@ -57,11 +57,13 @@ void GameManager::SystemsStart()
 	// loads in models
 	m_cube.ModelLoader("..\\res\\cube.obj");
 	missleMesh.ModelLoader("..\\res\\cube.obj");
+	m_player.ModelLoader("..\\res\\cube.obj");
+
 
     //tree.ModelLoader("..\\res\\WoodenLog_obj.obj");
 	//apple.ModelLoader("..\\res\\Apple_obj.obj");
 
-	m_mainCamera.InitializeCamera(glm::vec3(0, 0, -5), glm::radians(m_mainCamera.fov), (float)m_gameDisplay.getX()/ m_gameDisplay.getY(), 0.01f, 1000.0f);
+	m_mainCamera.InitializeCamera(glm::vec3(0, 0, -0), glm::radians(m_mainCamera.fov), (float)m_gameDisplay.getX()/ m_gameDisplay.getY(), 0.01f, 1000.0f);
 
 	// initalizes shaders
 	m_shader.InitalizeShader("..\\res\\shader.vert", "..\\res\\shader.frag");
@@ -99,7 +101,8 @@ void GameManager::GameActive()
 	{
 		ProcessInputs();
 		DrawGame();
-		IsColliding(m_apple, m_tree);
+	//	IsColliding(m_cube, missleMesh);
+
 		UpdateDeltaTime();
 
 		// locks mouse in window and hide it 
@@ -146,7 +149,7 @@ void GameManager::ProcessInputs()
 			}
 			if (event.button.button == SDL_BUTTON_RIGHT)
 			{
-				m_offset -= 1;
+				m_offset -= 20;
 			}
 		}
 		break;
@@ -209,7 +212,7 @@ void GameManager::ProcessInputs()
 	const Uint8* keyInputs = SDL_GetKeyboardState(NULL);
 	ProcessKeyboardInputs(keyInputs);
 }
-
+	
 void GameManager::ProcessKeyboardInputs(const Uint8* inputs)
 {
 	float distance = 40.0f * m_time;
@@ -227,7 +230,7 @@ void GameManager::ProcessKeyboardInputs(const Uint8* inputs)
 		m_mainCamera.MoveHoriz(distance);
 	}
 	if (inputs[SDL_SCANCODE_SPACE]) {
-		m_mainCamera.MoveVertical(distance);
+		m_mainCamera.MoveVertical(distance);		
 	}
 	if (inputs[SDL_SCANCODE_LSHIFT]) {
 		m_mainCamera.MoveVertical(-distance);
@@ -245,7 +248,8 @@ bool GameManager::IsColliding(MeshManager& mesh, MeshManager& mesh1)
 		+ (mesh1.getSpherePos().z - mesh.getSpherePos().z) * (mesh1.getSpherePos().z - mesh.getSpherePos().z));
 	if (distance * distance < (mesh.getSphereRad() + mesh1.getSphereRad()))
 	{	
-		m_collsionCounter *= 0;
+		
+	  // m_collsionCounter *= 0;
 		m_gameAudio.PlaySound(0);
 		return true;
 	}
@@ -374,10 +378,25 @@ void GameManager::DrawMix()
 }*/
 
 
+
 void GameManager::Ground()
 {
-	transform.SetPos(glm::vec3(-100, 20, -100));
-	transform.SetScale(glm::vec3(10, 4, 10));
+	transform.SetPos(glm::vec3(0, -30, 0));
+	transform.SetScale(glm::vec3(40, 1, 40));
+
+	m_tarmacTex->BindTexture(0);
+
+	m_shader.Bind();
+	m_shader.UpdateShader(transform, m_mainCamera);
+
+	m_cube.UpdateColData(*transform.GetPos(), 1);
+
+	m_cube.Draw();
+}
+void GameManager::Ground1()
+{
+	transform.SetPos(glm::vec3(-20, 30, m_offset));
+	transform.SetScale(glm::vec3(1, 1, 1));
 
 	m_tarmacTex->BindTexture(0);
 
@@ -457,6 +476,7 @@ void GameManager::DrawEMap()
 
 
 
+// have an array of missles and then when a missle hits an object remvoe it from the array
 
 void GameManager::InitMissile()
 {
@@ -464,75 +484,66 @@ void GameManager::InitMissile()
 }
 
 
+// store in process inputs, checks for missle, if it finds one you make it move, init the missle esle where 
 void GameManager::ShootMissile()
 {
-	transform.SetPos(glm::vec3(steeringVelocity * m_collsionCounter));
-	transform.SetRot(glm::vec3(0.0, 0.0, 0.0));
-	transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
+	
+		transform.SetPos(glm::vec3(steeringVelocity * m_collsionCounter));
+		transform.SetRot(glm::vec3(0.0, 0.0, 0.0));
+		transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
 
-	m_tarmacTex->BindTexture(0);
+		m_tarmacTex->BindTexture(0);
 
-	desiredVelocity = (glm::normalize(m_cube.getSpherePos() - missleMesh.getSpherePos()));
-	steeringVelocity = desiredVelocity - glm::vec3(0.0f, 0.0f, 0.0f); // need to get curren tvecoltiy
+		desiredVelocity = (glm::normalize(m_cube.getSpherePos() - missleMesh.getSpherePos()));
+		steeringVelocity = desiredVelocity - glm::vec3(0.0f, 0.0f, 0.0f); // need to get curren tvecoltiy
 
-	//transform.SetPos(steeringVelocity * m_time);
 
-	m_shader.Bind();
-	m_shader.UpdateShader(transform, m_mainCamera);
+		missleMesh.UpdateColData(*transform.GetPos(), 1);
 
-	missleMesh.Draw();
+		m_shader.Bind();
+		m_shader.UpdateShader(transform, m_mainCamera);
+
+		missleMesh.Draw();
+	
 }
-/*transform.SetPos(glm::vec3(-5, 0.0, -5));
+
+void GameManager::DrawPlayer()
+{
+
+	transform.SetPos(glm::vec3(m_mainCamera.getPosition() - glm::vec3(0.0f, -5, 0.0f)));
 	transform.SetRot(glm::vec3(0.0, 0.0, 0.0));
 	transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
 
 	m_tarmacTex->BindTexture(0);
 
+	m_player.UpdateColData(*transform.GetPos(), m_scale);
+
 	m_shader.Bind();
 	m_shader.UpdateShader(transform, m_mainCamera);
 
-	desiredVelocity = (glm::normalize(m_cube.getSpherePos() - missleMesh.getSpherePos()));
-	steeringVelocity = desiredVelocity - glm::vec3(0.0f, 0.0f, 1.0f);
-
-	transform.SetPos(steeringVelocity * m_time);
-
-	missleMesh.UpdateColData(*transform.GetPos(), 1);
-
-	m_cube.Draw();*/
+	m_player.Draw();
+}
 
 void GameManager::DrawGame()
 {
 	m_gameDisplay.ClearDisplay(0.5, 0.5, 0.5, 1.0);
 
-   /* m_FBO.BindFBO();
-	//DrawSkyBox();
-	//Spinning();
-	//Ground();
-	//ShootMissile();
+    m_FBO.BindFBO();
+	DrawSkyBox();
+	DrawPlayer();
+	Ground();
 
-	if (cameraLock)
-	{
-		m_mainCamera.LookAt(m_cube.getSpherePos());
-	}
-
-	if (shoot)
-	{
-		//ShootMissile();
-		shoot = false;
-	}
-
-
-	m_collsionCounter = m_collsionCounter + 0.05f;
+    m_mainCamera.LookAt(m_player.getSpherePos());
 
 	m_FBO.UnbindFBO();
 	
 	// if ship is dmaaged shake screen
 	m_FBO.RenderFBO(transform, m_mainCamera, m_collsionCounter);
-	*/
+	
 	DrawSkyBox();
-	Ground();
-	ShootMissile();
-
+	DrawPlayer();
+//	Ground();
+	//Ground1();
 
 	m_collsionCounter = m_collsionCounter + 0.05f;
 
