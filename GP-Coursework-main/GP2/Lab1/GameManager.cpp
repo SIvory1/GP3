@@ -381,7 +381,7 @@ void GameManager::DrawMix()
 
 void GameManager::Ground()
 {
-	transform.SetPos(glm::vec3(0, -30, 0));
+	transform.SetPos(glm::vec3(0, -5, 0));
 	transform.SetScale(glm::vec3(40, 1, 40));
 
 	m_tarmacTex->BindTexture(0);
@@ -476,12 +476,6 @@ void GameManager::DrawEMap()
 
 
 
-// have an array of missles and then when a missle hits an object remvoe it from the array
-
-void GameManager::InitMissile()
-{
-
-}
 
 
 // store in process inputs, checks for missle, if it finds one you make it move, init the missle esle where 
@@ -507,10 +501,28 @@ void GameManager::ShootMissile()
 	
 }
 
+// have an array of missles and then when a missle hits an object remvoe it from the array
+
+void GameManager::InitMissile()
+{
+	transform.SetPos(glm::vec3(m_mainCamera.getPosition() - glm::vec3(0, 5, 0)));
+	transform.SetRot(glm::vec3(0.0, 0.0, 0.0));
+	transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
+
+	m_tarmacTex->BindTexture(0);
+
+	m_player.UpdateColData(*transform.GetPos(), m_scale);
+
+	m_shader.Bind();
+	m_shader.UpdateShader(transform, m_mainCamera);
+
+
+	m_player.Draw();
+}
+
 void GameManager::DrawPlayer()
 {
-
-	transform.SetPos(glm::vec3(m_mainCamera.getPosition() - glm::vec3(0.0f, -5, 0.0f)));
+	transform.SetPos(glm::vec3(m_mainCamera.getPosition()));
 	transform.SetRot(glm::vec3(0.0, 0.0, 0.0));
 	transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
 
@@ -524,16 +536,19 @@ void GameManager::DrawPlayer()
 	m_player.Draw();
 }
 
+
+
+
 void GameManager::DrawGame()
 {
 	m_gameDisplay.ClearDisplay(0.5, 0.5, 0.5, 1.0);
 
     m_FBO.BindFBO();
 	DrawSkyBox();
-	DrawPlayer();
+	InitMissile();
 	Ground();
 
-    m_mainCamera.LookAt(m_player.getSpherePos());
+	//m_mainCamera.LookAt(m_player.getSpherePos());
 
 	m_FBO.UnbindFBO();
 	
@@ -542,7 +557,7 @@ void GameManager::DrawGame()
 	
 	DrawSkyBox();
 	DrawPlayer();
-//	Ground();
+	Ground();
 	//Ground1();
 
 	m_collsionCounter = m_collsionCounter + 0.05f;
