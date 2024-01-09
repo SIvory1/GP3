@@ -5,8 +5,7 @@
 
 Transform transform;
 
-bool shoot;
-
+bool justFired;
 GameManager::GameManager()
 {
 
@@ -24,7 +23,7 @@ GameManager::GameManager()
 	m_preY = 0;
 
 	cameraLock = false;
-	shoot = true;
+	justFired = true;
 }
 
 GameManager::~GameManager()
@@ -65,7 +64,7 @@ void GameManager::SystemsStart()
     //tree.ModelLoader("..\\res\\WoodenLog_obj.obj");
 	//apple.ModelLoader("..\\res\\Apple_obj.obj");
 
-	m_mainCamera.InitializeCamera(glm::vec3(0, 0, -0), glm::radians(m_mainCamera.fov), (float)m_gameDisplay.getX()/ m_gameDisplay.getY(), 0.01f, 1000.0f);
+	m_mainCamera.InitializeCamera(glm::vec3(10, 100, -10), glm::radians(m_mainCamera.fov), (float)m_gameDisplay.getX()/ m_gameDisplay.getY(), 0.01f, 1000.0f);
 
 	// initalizes shaders
 	m_shader.InitalizeShader("..\\res\\shader.vert", "..\\res\\shader.frag");
@@ -144,8 +143,7 @@ void GameManager::ProcessInputs()
 			// when player inputs mouse buttons objects in scene moves 
 			if (event.button.button == SDL_BUTTON_LEFT)
 			{
-
-				shoot = true;
+				justFired = false;
 				//m_offset += 1;
 			}
 			if (event.button.button == SDL_BUTTON_RIGHT)
@@ -382,7 +380,7 @@ void GameManager::DrawMix()
 
 void GameManager::Ground()
 {
-	transform.SetPos(glm::vec3(100, -5, -100));
+	transform.SetPos(glm::vec3(-100, 100, 100));
 	transform.SetScale(glm::vec3(1, 1, 1));
 
 	m_tarmacTex.BindTexture(0);
@@ -478,26 +476,47 @@ void GameManager::DrawEMap()
 	m_cube.Draw();
 }
 
+
+
 // store in process inputs, checks for missle, if it finds one you make it move, init the missle esle where 
 void GameManager::ShootMissile()
 {
-	
-		transform.SetPos(glm::vec3(steeringVelocity * m_collsionCounter));
+	if (justFired)
+	{
+		transform.SetPos(glm::vec3(m_mainCamera.getPosition() - glm::vec3(0, 5, 0)));
+
+		missleMesh.UpdateColData(*transform.GetPos(), m_scale);
+
 		transform.SetRot(glm::vec3(0.0, 0.0, 0.0));
 		transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
 
 		m_tarmacTex.BindTexture(0);
 
-		desiredVelocity = (glm::normalize(m_cube.getSpherePos() - missleMesh.getSpherePos()));
-		steeringVelocity = desiredVelocity - glm::vec3(0.0f, 0.0f, 0.0f); // need to get curren tvecoltiy
+		m_shader.Bind();
+		m_shader.UpdateShader(transform, m_mainCamera);
 
-		//missleMesh.UpdateColData(*transform.GetPos(), m_scale);
+		missleMesh.Draw();
+	}
+	else
+	{
+		missleMesh.UpdateColData(*transform.GetPos(), m_scale);
+
+		transform.SetPos(glm::vec3(steeringVelocity * m_collsionCounter));
+		transform.SetRot(glm::vec3(0.0, 0.0, 0.0));
+		transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
+
+
+
+		m_tarmacTex.BindTexture(0);
+
+		desiredVelocity = (glm::normalize(m_cube.getSpherePos() - missleMesh.getSpherePos()));
+		steeringVelocity = desiredVelocity; //- glm::vec3(0,0,0) need to get curren tvecoltiy
 
 		m_shader.Bind();
 		m_shader.UpdateShader(transform, m_mainCamera);
 
 		missleMesh.Draw();
-	
+	}
 }//
 
 // have an array of missles and then when a missle hits an object remvoe it from the array
@@ -514,7 +533,6 @@ void GameManager::InitMissile()
 
 	m_shader.Bind();
 	m_shader.UpdateShader(transform, m_mainCamera);
-
 
 	m_player.Draw();
 }
@@ -535,9 +553,6 @@ void GameManager::DrawPlayer()
 	m_player.Draw();
 }
 
-
-
-
 void GameManager::DrawGame()
 {
 	m_gameDisplay.ClearDisplay(0.5, 0.5, 0.5, 1.0);
@@ -550,7 +565,7 @@ void GameManager::DrawGame()
 	ShootMissile();
 	Ground();
 
-	gameObject.DrawAll(transform, m_mainCamera, glm::vec3(10.0, 10.0, 10.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
+	//gameObject.DrawAll(transform, m_mainCamera, glm::vec3(10.0, 10.0, 10.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
 
 	m_FBO.UnbindFBO();	
 	m_FBO.RenderFBO(transform, m_mainCamera, m_collsionCounter);
@@ -559,7 +574,7 @@ void GameManager::DrawGame()
 	ShootMissile();
 	Ground();
 
-	gameObject.DrawAll(transform, m_mainCamera, glm::vec3(10.0, 10.0, 10.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
+	//gameObject.DrawAll(transform, m_mainCamera, glm::vec3(10.0, 10.0, 10.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
 
 	m_gameDisplay.ChangeBuffer();
 } 

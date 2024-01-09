@@ -1,12 +1,9 @@
 ﻿  GameManager.cpp
-D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(172,19): warning C4305: '-=': truncation from 'double' to 'float'
-D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(185,26): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
-D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(186,23): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
-D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(190,32): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(194,31): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(199,31): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(203,32): warning C4305: 'argument': truncation from 'double' to 'float'
-  GameObject.cpp
-  main.cpp
-  Generating Code...
+D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(170,19): warning C4305: '-=': truncation from 'double' to 'float'
+D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(183,26): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
+D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(184,23): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
+D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(188,32): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(192,31): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(197,31): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Lab1\GameManager.cpp(201,32): warning C4305: 'argument': truncation from 'double' to 'float'
   Lab1.vcxproj -> D:\UNI\GP3\GP3\GP-Coursework-main\GP2\Debug\Lab1.exe

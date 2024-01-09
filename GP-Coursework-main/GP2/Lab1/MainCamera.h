@@ -44,7 +44,7 @@ public:
 	{
 		return pos;
 	}
-	
+
 	// dont want to use inline, as it is called loads of times and that woudfl cause big memeoray footprint???
 	// reads in new values to adjust camera fov 
 	void ChangeFOV(float fov, float aspect, float nearClip, float farClip)
