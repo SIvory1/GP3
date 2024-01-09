@@ -8,8 +8,6 @@
 #include "TextureManager.h"
 #include "transform.h"
 #include "AudioManager.h"
-#include "GameManager.h"
-
 
 class GameObject
 {
@@ -17,18 +15,29 @@ public:
 	GameObject();
 	~GameObject();
 
-	void CombineObject();
-	void CombineObject1();
+
+	void DrawAll(Transform transform, MainCamera mainCamera, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale);
+	void InitComponents();
+	//void SetTransform(Transform transform, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale);
 
 
 private:
+	Transform tObject;
 
-	DisplayGame gameDisplay;
-	MeshManager mesh;
+	ShaderManager shader1;
+	TextureManager tarmacTex;
 	MeshManager mesh1;
-	MainCamera mainCamera;
-	ShaderManager shader;
-	AudioManager gameAudio;
-//	GameManager gameManager;
 
+	enum
+	{
+		TARMAC,
+		NUM_OF_TEXTURES
+	};
+
+	TextureManager* textureHolder = new TextureManager[20];
+
+	bool active;
+	float counter = 0.0f;
+
+	float deltaTime;
 }; 

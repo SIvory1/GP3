@@ -1,16 +1,48 @@
 #include "GameObject.h"
-/*
-Transform transform;
+
 
 GameObject::GameObject()
 {
-
 }
 
 GameObject::~GameObject()
 {
-
 }
+
+void GameObject::InitComponents()
+{
+    tarmacTex.TextureLoader("..\\res\\TarmacDark_D.jpg");
+
+	shader1.InitalizeShader("..\\res\\shader.vert", "..\\res\\shader.frag");
+	mesh1.ModelLoader("..\\res\\cube.obj");
+}
+
+/*void GameObject::SetTransform(Transform transform, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale)
+{
+	transform.SetPos(pos);
+	transform.SetRot(rot);
+	transform.SetScale(scale);
+}*/
+
+void GameObject::DrawAll(Transform transform, MainCamera mainCamera, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale)
+{
+	transform.SetPos(pos);
+	transform.SetRot(rot);
+	transform.SetScale(scale);
+
+	tarmacTex.BindTexture(0);
+
+	shader1.Bind();
+	shader1.UpdateShader(transform, mainCamera);
+
+	mesh1.Draw();
+}
+
+
+/*
+Transform transform;
+
+
 
 void GameObject::CombineObject()
 {

@@ -10,11 +10,6 @@ bool shoot;
 GameManager::GameManager()
 {
 
-	m_tarmacTex = new TextureManager("..\\res\\TarmacDark_D.jpg");
-	m_noise = new TextureManager("..\\res\\waternoise.png");
-	m_texture1 = new TextureManager("..\\res\\sky.jpg");
-	m_water = new TextureManager("..\\res\\water1.jpg");
-
 	// init variables
 	m_offset = 0.0;
 	m_scale = 1;
@@ -43,6 +38,8 @@ void GameManager::run()
 	GameActive();
 }
 
+
+
 // initalizes shader, textures, meshes, sounds 
 void GameManager::SystemsStart()
 {
@@ -59,7 +56,12 @@ void GameManager::SystemsStart()
 	missleMesh.ModelLoader("..\\res\\cube.obj");
 	m_player.ModelLoader("..\\res\\cube.obj");
 
+	gameObject.InitComponents();
 
+    m_tarmacTex.TextureLoader("..\\res\\TarmacDark_D.jpg");
+	m_noise.TextureLoader("..\\res\\waternoise.png");
+	m_texture1.TextureLoader("..\\res\\sky.jpg");
+	m_water.TextureLoader("..\\res\\water1.jpg");
     //tree.ModelLoader("..\\res\\WoodenLog_obj.obj");
 	//apple.ModelLoader("..\\res\\Apple_obj.obj");
 
@@ -90,7 +92,6 @@ void GameManager::UpdateDeltaTime()
 	m_currentFrame = SDL_GetPerformanceCounter();
 
 	m_time = (float)((m_currentFrame - m_lastFrame) / (float)SDL_GetPerformanceFrequency());
-
 }
 
 void GameManager::GameActive()
@@ -101,7 +102,7 @@ void GameManager::GameActive()
 	{
 		ProcessInputs();
 		DrawGame();
-	//	IsColliding(m_cube, missleMesh);
+		IsColliding(m_apple, m_tree);
 
 		UpdateDeltaTime();
 
@@ -241,7 +242,7 @@ void GameManager::ProcessKeyboardInputs(const Uint8* inputs)
 // reads in 2 meshes and checks if they are colliding
 bool GameManager::IsColliding(MeshManager& mesh, MeshManager& mesh1)
 {
-
+	
 	float distance = 
 		((mesh1.getSpherePos().x - mesh.getSpherePos().x) * (mesh1.getSpherePos().x - mesh.getSpherePos().x) 
 		+ (mesh1.getSpherePos().y - mesh.getSpherePos().y) * (mesh1.getSpherePos().y - mesh.getSpherePos().y) 
@@ -249,7 +250,7 @@ bool GameManager::IsColliding(MeshManager& mesh, MeshManager& mesh1)
 	if (distance * distance < (mesh.getSphereRad() + mesh1.getSphereRad()))
 	{	
 		
-	  // m_collsionCounter *= 0;
+	    m_collsionCounter *= 0;
 		m_gameAudio.PlaySound(0);
 		return true;
 	}
@@ -381,10 +382,10 @@ void GameManager::DrawMix()
 
 void GameManager::Ground()
 {
-	transform.SetPos(glm::vec3(0, -5, 0));
-	transform.SetScale(glm::vec3(40, 1, 40));
+	transform.SetPos(glm::vec3(100, -5, -100));
+	transform.SetScale(glm::vec3(1, 1, 1));
 
-	m_tarmacTex->BindTexture(0);
+	m_tarmacTex.BindTexture(0);
 
 	m_shader.Bind();
 	m_shader.UpdateShader(transform, m_mainCamera);
@@ -392,13 +393,16 @@ void GameManager::Ground()
 	m_cube.UpdateColData(*transform.GetPos(), 1);
 
 	m_cube.Draw();
+
+  
 }
+
 void GameManager::Ground1()
 {
 	transform.SetPos(glm::vec3(-20, 30, m_offset));
 	transform.SetScale(glm::vec3(1, 1, 1));
 
-	m_tarmacTex->BindTexture(0);
+	m_tarmacTex.BindTexture(0);
 
 	m_shader.Bind();
 	m_shader.UpdateShader(transform, m_mainCamera);
@@ -428,11 +432,11 @@ void GameManager::DrawWater()
 
 	//set textures
 	glActiveTexture(GL_TEXTURE1); //set acitve texture unit
-	glBindTexture(GL_TEXTURE_2D, m_noise->getID());
+	glBindTexture(GL_TEXTURE_2D, m_noise.getID());
 	glUniform1i(noiseTex, 1);
 
 	glActiveTexture(GL_TEXTURE2); //set acitve texture unit
-	glBindTexture(GL_TEXTURE_2D, m_water->getID());
+	glBindTexture(GL_TEXTURE_2D, m_water.getID());
 	glUniform1i(waterTex, 2);
 
 	m_waterShader.UpdateShader(transform, m_mainCamera);
@@ -466,17 +470,13 @@ void GameManager::DrawEMap()
 
 	//set textures
 	glActiveTexture(GL_TEXTURE1); //set acitve texture unit
-	glBindTexture(GL_TEXTURE_2D, m_tarmacTex->getID());
+	glBindTexture(GL_TEXTURE_2D, m_tarmacTex.getID());
 	glUniform1i(blur, 1);
 
 	m_emapShader.UpdateShader(transform, m_mainCamera);
 
 	m_cube.Draw();
 }
-
-
-
-
 
 // store in process inputs, checks for missle, if it finds one you make it move, init the missle esle where 
 void GameManager::ShootMissile()
@@ -486,20 +486,19 @@ void GameManager::ShootMissile()
 		transform.SetRot(glm::vec3(0.0, 0.0, 0.0));
 		transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
 
-		m_tarmacTex->BindTexture(0);
+		m_tarmacTex.BindTexture(0);
 
 		desiredVelocity = (glm::normalize(m_cube.getSpherePos() - missleMesh.getSpherePos()));
 		steeringVelocity = desiredVelocity - glm::vec3(0.0f, 0.0f, 0.0f); // need to get curren tvecoltiy
 
-
-		missleMesh.UpdateColData(*transform.GetPos(), 1);
+		//missleMesh.UpdateColData(*transform.GetPos(), m_scale);
 
 		m_shader.Bind();
 		m_shader.UpdateShader(transform, m_mainCamera);
 
 		missleMesh.Draw();
 	
-}
+}//
 
 // have an array of missles and then when a missle hits an object remvoe it from the array
 
@@ -509,7 +508,7 @@ void GameManager::InitMissile()
 	transform.SetRot(glm::vec3(0.0, 0.0, 0.0));
 	transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
 
-	m_tarmacTex->BindTexture(0);
+	m_tarmacTex.BindTexture(0);
 
 	m_player.UpdateColData(*transform.GetPos(), m_scale);
 
@@ -526,7 +525,7 @@ void GameManager::DrawPlayer()
 	transform.SetRot(glm::vec3(0.0, 0.0, 0.0));
 	transform.SetScale(glm::vec3(m_scale, m_scale, m_scale));
 
-	m_tarmacTex->BindTexture(0);
+	m_tarmacTex.BindTexture(0);
 
 	m_player.UpdateColData(*transform.GetPos(), m_scale);
 
@@ -543,24 +542,30 @@ void GameManager::DrawGame()
 {
 	m_gameDisplay.ClearDisplay(0.5, 0.5, 0.5, 1.0);
 
-    m_FBO.BindFBO();
-	DrawSkyBox();
-	InitMissile();
-	Ground();
-
-	//m_mainCamera.LookAt(m_player.getSpherePos());
-
-	m_FBO.UnbindFBO();
-	
-	// if ship is dmaaged shake screen
-	m_FBO.RenderFBO(transform, m_mainCamera, m_collsionCounter);
-	
-	DrawSkyBox();
-	DrawPlayer();
-	Ground();
-	//Ground1();
-
 	m_collsionCounter = m_collsionCounter + 0.05f;
+
+    m_FBO.BindFBO();
+
+	DrawSkyBox();
+	ShootMissile();
+	Ground();
+
+	gameObject.DrawAll(transform, m_mainCamera, glm::vec3(10.0, 10.0, 10.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
+
+	m_FBO.UnbindFBO();	
+	m_FBO.RenderFBO(transform, m_mainCamera, m_collsionCounter);
+
+	DrawSkyBox();
+	ShootMissile();
+	Ground();
+
+	gameObject.DrawAll(transform, m_mainCamera, glm::vec3(10.0, 10.0, 10.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
 
 	m_gameDisplay.ChangeBuffer();
 } 
+
+
+
+
+
+//m_mainCamera.LookAt(m_player.getSpherePos());

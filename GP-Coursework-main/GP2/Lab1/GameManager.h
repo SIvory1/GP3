@@ -46,7 +46,6 @@ private:
 	void ShootMissile();
 	void InitMissile();
 
-
 	void print(float value)
 	{
 		cout << value << endl;
@@ -75,16 +74,19 @@ private:
 
 	AudioManager m_gameAudio;
 
-    TextureManager* m_tarmacTex;
-	TextureManager* m_treeTex;
-	TextureManager* m_appleTex;
-	TextureManager* m_noise;
-	TextureManager* m_noise1;
-	TextureManager* m_texture1;
-	TextureManager* m_water;
-	
+    TextureManager m_tarmacTex;
+	TextureManager m_treeTex;
+	TextureManager m_appleTex;
+	TextureManager m_noise;
+	TextureManager m_noise1;
+	TextureManager m_texture1;
+	TextureManager m_water;
+
 	CubemapManager m_cubeMap;
     FrameBufferObject m_FBO;
+
+	GameObject gameObject;
+
 
 	// for object transform
 	float m_collsionCounter;

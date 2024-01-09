@@ -6,7 +6,7 @@
 class TextureManager
 {
 public:
-	TextureManager(const std::string& filename);
+	TextureManager();
 	~TextureManager();
 
 	void BindTexture(unsigned int obj); // bind upto 32 textures
